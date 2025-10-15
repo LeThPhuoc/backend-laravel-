@@ -127,8 +127,4 @@ return [
         'JWTAuth' => PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory' => PHPOpenSourceSaver\JWTAuth\Facades\JWTFactory::class,
     ],
-
-    // 'providers' => [
-    //     Illuminate\Filesystem\FilesystemServiceProvider::class,
-    // ],
 ];
