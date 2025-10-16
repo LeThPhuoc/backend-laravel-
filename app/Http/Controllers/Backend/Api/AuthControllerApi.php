@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Backend\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Requests\AuthRequest;
+use App\Http\Requests\AuthStore;
 use App\Http\Requests\AuthLoginRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -43,14 +43,14 @@ class AuthControllerApi extends Controller
         return response()->json([
             'message' => 'Thông tin đăng nhập không hợp lệ.',
             'errors' => [
-                'login_name' => ['Thông tin tài khoản hoặc mật khẩu không đúng.'],
+                'login_name' => ['Thông tin tài khoản không đúng.'],
+                'password' => ['Mật khẩu không đúng.'],
             ]
         ], Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
-    public function store(AuthRequest $request){
-        $post = $request->only('name', 'login_name', 'tel', 'password', 'address', 'email', 'basic_salary');
-        $isAdmin = $request->has('is_admin') ? 1 : 0;
+    public function store(AuthStore $request){
+        $post = $request->only('name', 'login_name', 'tel', 'password', 'address', 'email', 'is_admin');
         $post = User::create([
             'name' => $post['name'],
             'login_name' => $post['login_name'],
@@ -58,8 +58,7 @@ class AuthControllerApi extends Controller
             'password' => Hash::make($post['password']),
             'address' => $post['address'],
             'email' => $post['email'],
-            'basic_salary' => $post['basic_salary'],
-            'is_admin' => $isAdmin
+            'is_admin' => $post['is_admin']
         ]);
         return response()->json([
             'message' => 'Successfully created user!'

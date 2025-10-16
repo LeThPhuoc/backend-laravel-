@@ -6,6 +6,7 @@ use App\Http\Controllers\Backend\Api\AuthControllerApi;
 
 Route::get('/users', [AuthControllerApi::class, 'index']);
 Route::post('/login', [AuthControllerApi::class, 'login']);
+Route::post('/store', [AuthControllerApi::class, 'store']);
 Route::middleware('jwt.auth')->group(function () {
     Route::post('/logout', [AuthControllerApi::class, 'logout']);
 });
