@@ -40,13 +40,7 @@ class AuthControllerApi extends Controller
             ]);
         }
 
-        return response()->json([
-            'message' => 'Thông tin đăng nhập không hợp lệ.',
-            'errors' => [
-                'login_name' => ['Thông tin tài khoản không đúng.'],
-                'password' => ['Mật khẩu không đúng.'],
-            ]
-        ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        return $this->handleLoginFailure($request);
     }
 
     public function store(AuthStore $request){
@@ -70,5 +64,25 @@ class AuthControllerApi extends Controller
         return response()->json([
             'message' => 'Successfully logged out'
         ]);
+    }
+
+    private function handleLoginFailure(AuthLoginRequest $request) {
+        $userName = $request->input('login_name');
+        $user = User::where('login_name', $userName)->first();
+        if($user) {
+            return response()->json([
+                'message' => 'Mật khẩu không đúng.',
+                'errors' => [
+                    'password' => ['Mật khẩu không đúng.'],
+                ]
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        } else {
+            return response()->json([
+                'message' => 'Thông tin đăng nhập không hợp lệ.',
+                'errors' => [
+                    'login_name' => ['Tên đăng nhập hoặc mật khẩu không đúng.'],
+                ]
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 }
