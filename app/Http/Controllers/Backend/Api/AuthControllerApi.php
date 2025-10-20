@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests\AuthStore;
 use App\Http\Requests\AuthLoginRequest;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
+use App\Models\Boss;
+use App\Models\Staff;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Response;
 
@@ -17,26 +18,27 @@ class AuthControllerApi extends Controller
 
     }
 
-    public function index(){
-        
-    }
-
-    public function register(){
-        
-    }
-
     public function login(AuthLoginRequest $request){
         $credentials = [
             'login_name' => $request->input('login_name'),
             'password' => $request->input('password')
         ];
-
-        if ($token = auth('api')->attempt($credentials)) {
+        if ($token = auth('boss')->attempt($credentials)) {
             return response()->json([
                 'token' => $token,
-                'expires_in' => auth('api')->factory()->getTTL() * 60,
+                'expires_in' => auth('boss')->factory()->getTTL() * 60,
                 'type' => "bearer",
-                'user' => auth('api')->user()
+                'user' => auth('boss')->user(),
+                'role' => 'boss'
+            ]);
+        }
+        if ($token = auth('staff')->attempt($credentials)) {
+            return response()->json([
+                'token' => $token,
+                'expires_in' => auth('staff')->factory()->getTTL() * 60,
+                'type' => "bearer",
+                'user' => auth('staff')->user(),
+                'role' => 'staff'
             ]);
         }
 
@@ -44,18 +46,64 @@ class AuthControllerApi extends Controller
     }
 
     public function store(AuthStore $request){
-        $post = $request->only('name', 'login_name', 'tel', 'password', 'address', 'email', 'is_admin');
-        $post = User::create([
+        $post = $request->only('name', 'login_name', 'tel', 'password', 'address', 'email');
+        $exists = Boss::where('email', $post['email'])->orWhere('login_name', $post['login_name'])->exists() ||
+                Staff::where('email', $post['email'])->orWhere('login_name', $post['login_name'])->exists();
+
+        if ($exists) {
+            return response()->json(['message' => 'Tên đăng nhập hoặc email đã tồn tại'], 400);
+        }
+        $post = Boss::create([
             'name' => $post['name'],
             'login_name' => $post['login_name'],
             'tel' => $post['tel'],
             'password' => Hash::make($post['password']),
             'address' => $post['address'],
             'email' => $post['email'],
-            'is_admin' => $post['is_admin']
         ]);
         return response()->json([
-            'message' => 'Successfully created user!'
+            'message' => 'Successfully created account!'
+        ]);
+    }
+
+    public function createStaff(AuthStore $request){
+        $post = $request->only('name', 'login_name', 'tel', 'password', 'address', 'email', 'salary');
+        $boss = auth('boss')->user();
+        $exists = Staff::where('email', $post['email'])->orWhere('login_name', $post['login_name'])->exists();
+
+        if ($exists) {
+            return response()->json(['message' => 'Tên đăng nhập hoặc email đã tồn tại'], 400);
+        }
+
+        $post = Staff::create([
+            'name' => $post['name'],
+            'login_name' => $post['login_name'],
+            'tel' => $post['tel'],
+            'password' => Hash::make($post['password']),
+            'address' => $post['address'],
+            'email' => $post['email'],
+        ]);
+
+        $boss->staffs()->attach($post->id, ['salary' => $post['salary']]);
+        
+        return response()->json([
+            'message' => 'Successfully created account!'
+        ]);
+    }
+
+    public function getListStaff() {
+        $boss = auth('boss')->user();
+        $staffs = Boss::with('staffs')->findOrFail($boss->id);
+        foreach($staffs->staffs as $staff) {
+            $staff->salary = $staff->pivot->salary;
+            unset($staff->pivot);
+            unset($staff->email_verified_at);
+            unset($staff->remember_token);
+            unset($staff->created_at);
+            unset($staff->updated_at);
+        }
+        return response()->json([
+            'staffs' => $staffs->staffs
         ]);
     }
 
@@ -68,7 +116,7 @@ class AuthControllerApi extends Controller
 
     private function handleLoginFailure(AuthLoginRequest $request) {
         $userName = $request->input('login_name');
-        $user = User::where('login_name', $userName)->first();
+        $user = Boss::where('login_name', $userName)->first() || Staff::where('login_name', $userName)->first();
         if($user) {
             return response()->json([
                 'message' => 'Mật khẩu không đúng.',

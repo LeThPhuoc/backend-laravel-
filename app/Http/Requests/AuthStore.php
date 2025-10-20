@@ -23,12 +23,13 @@ class AuthStore extends FormRequest
     {
         return [
             'name' => 'required',
-            'login_name' => 'required|unique:users',
-            'email' => 'required|email|unique:users',
+            'login_name' => 'required',
+            'email' => 'required|email',
             'tel' => 'required|max:11',
-            'basic_salary' => 'nullable',
+            'salary' => 'nullable',
             'password' => 'required',
             'address' => 'required',
+            'role' => 'in:boss,staff|nullable',
         ];
     }
 

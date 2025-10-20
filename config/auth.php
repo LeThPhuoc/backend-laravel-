@@ -44,6 +44,15 @@ return [
             'driver' => 'jwt',
             'provider' => 'users',
         ],
+        'boss' => [
+            'driver' => 'jwt',
+            'provider' => 'bosses',
+        ],
+
+        'staff' => [
+            'driver' => 'jwt',
+            'provider' => 'staffs',
+        ],
     ],
 
     /*
@@ -73,6 +82,15 @@ return [
         //     'driver' => 'database',
         //     'table' => 'users',
         // ],
+        'bosses' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Boss::class,
+        ],
+
+        'staffs' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Staff::class,
+        ],
     ],
 
     /*
