@@ -15,32 +15,45 @@ use Illuminate\Http\Response;
 class AuthControllerApi extends Controller
 {
     public function __construct(){
-
+        
     }
+
+    protected $guards = ['boss', 'staff'];
 
     public function login(AuthLoginRequest $request){
         $credentials = [
             'login_name' => $request->input('login_name'),
             'password' => $request->input('password')
         ];
-        if ($token = auth('boss')->attempt($credentials)) {
+        foreach($this->guards as $guard) {
+            if ($token = auth($guard)->attempt($credentials)) {
             return response()->json([
                 'token' => $token,
-                'expires_in' => auth('boss')->factory()->getTTL() * 60,
+                'expires_in' => auth($guard)->factory()->getTTL() * 60,
                 'type' => "bearer",
-                'user' => auth('boss')->user(),
-                'role' => 'boss'
+                'user' => auth($guard)->user(),
+                'role' => $guard
             ]);
         }
-        if ($token = auth('staff')->attempt($credentials)) {
-            return response()->json([
-                'token' => $token,
-                'expires_in' => auth('staff')->factory()->getTTL() * 60,
-                'type' => "bearer",
-                'user' => auth('staff')->user(),
-                'role' => 'staff'
-            ]);
         }
+        // if ($token = auth('boss')->attempt($credentials)) {
+        //     return response()->json([
+        //         'token' => $token,
+        //         'expires_in' => auth('boss')->factory()->getTTL() * 60,
+        //         'type' => "bearer",
+        //         'user' => auth('boss')->user(),
+        //         'role' => 'boss'
+        //     ]);
+        // }
+        // if ($token = auth('staff')->attempt($credentials)) {
+        //     return response()->json([
+        //         'token' => $token,
+        //         'expires_in' => auth('staff')->factory()->getTTL() * 60,
+        //         'type' => "bearer",
+        //         'user' => auth('staff')->user(),
+        //         'role' => 'staff'
+        //     ]);
+        // }
 
         return $this->handleLoginFailure($request);
     }
@@ -108,7 +121,9 @@ class AuthControllerApi extends Controller
     }
 
     public function logout(){
-        auth('api')->logout();
+        foreach($this->guards as $guard) {
+            auth($guard)->logout();
+        }
         return response()->json([
             'message' => ['Successfully logged out']
         ]);
