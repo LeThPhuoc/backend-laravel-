@@ -51,7 +51,7 @@ class AuthControllerApi extends Controller
                 Staff::where('email', $post['email'])->orWhere('login_name', $post['login_name'])->exists();
 
         if ($exists) {
-            return response()->json(['message' => 'Tên đăng nhập hoặc email đã tồn tại'], 400);
+            return response()->json(['message' => ['Tên đăng nhập hoặc email đã tồn tại']], 400);
         }
         $post = Boss::create([
             'name' => $post['name'],
@@ -62,7 +62,7 @@ class AuthControllerApi extends Controller
             'email' => $post['email'],
         ]);
         return response()->json([
-            'message' => 'Successfully created account!'
+            'message' => ['Successfully created account!']
         ]);
     }
 
@@ -72,7 +72,7 @@ class AuthControllerApi extends Controller
         $exists = Staff::where('email', $post['email'])->orWhere('login_name', $post['login_name'])->exists();
 
         if ($exists) {
-            return response()->json(['message' => 'Tên đăng nhập hoặc email đã tồn tại'], 400);
+            return response()->json(['message' => ['Tên đăng nhập hoặc email đã tồn tại']], 400);
         }
 
         $post = Staff::create([
@@ -87,7 +87,7 @@ class AuthControllerApi extends Controller
         $boss->staffs()->attach($post->id, ['salary' => $post['salary']]);
         
         return response()->json([
-            'message' => 'Successfully created account!'
+            'message' => ['Successfully created account!']
         ]);
     }
 
@@ -110,7 +110,7 @@ class AuthControllerApi extends Controller
     public function logout(){
         auth('api')->logout();
         return response()->json([
-            'message' => 'Successfully logged out'
+            'message' => ['Successfully logged out']
         ]);
     }
 
@@ -119,14 +119,14 @@ class AuthControllerApi extends Controller
         $user = Boss::where('login_name', $userName)->first() || Staff::where('login_name', $userName)->first();
         if($user) {
             return response()->json([
-                'message' => 'Mật khẩu không đúng.',
+                'message' => ['Mật khẩu không đúng.'],
                 'errors' => [
                     'password' => ['Mật khẩu không đúng.'],
                 ]
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         } else {
             return response()->json([
-                'message' => 'Thông tin đăng nhập không hợp lệ.',
+                'message' => ['Thông tin đăng nhập không hợp lệ.'],
                 'errors' => [
                     'login_name' => ['Tên đăng nhập hoặc mật khẩu không đúng.'],
                 ]
