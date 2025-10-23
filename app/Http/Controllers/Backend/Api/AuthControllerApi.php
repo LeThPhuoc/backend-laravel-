@@ -82,13 +82,14 @@ class AuthControllerApi extends Controller
     public function createStaff(AuthStore $request){
         $post = $request->only('name', 'login_name', 'tel', 'password', 'address', 'email', 'salary');
         $boss = auth('boss')->user();
-        $exists = Staff::where('email', $post['email'])->orWhere('login_name', $post['login_name'])->exists();
+        $exists = Boss::where('email', $post['email'])->orWhere('login_name', $post['login_name'])->exists() ||
+                Staff::where('email', $post['email'])->orWhere('login_name', $post['login_name'])->exists();
 
         if ($exists) {
             return response()->json(['message' => ['Tên đăng nhập hoặc email đã tồn tại']], 400);
         }
 
-        $post = Staff::create([
+        $staff = Staff::create([
             'name' => $post['name'],
             'login_name' => $post['login_name'],
             'tel' => $post['tel'],
@@ -97,7 +98,7 @@ class AuthControllerApi extends Controller
             'email' => $post['email'],
         ]);
 
-        $boss->staffs()->attach($post->id, ['salary' => $post['salary']]);
+        $boss->staffs()->attach($staff->id, ['salary' => $post['salary']]);
         
         return response()->json([
             'message' => ['Successfully created account!']
@@ -108,7 +109,7 @@ class AuthControllerApi extends Controller
         $boss = auth('boss')->user();
         $staffs = Boss::with('staffs')->findOrFail($boss->id);
         foreach($staffs->staffs as $staff) {
-            $staff->salary = $staff->pivot->salary;
+            $staff->salary = rtrim(rtrim($staff->pivot->salary, '0'), '.');
             unset($staff->pivot);
             unset($staff->email_verified_at);
             unset($staff->remember_token);
