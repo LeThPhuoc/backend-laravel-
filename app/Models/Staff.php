@@ -32,4 +32,11 @@ class Staff extends Authenticatable implements JWTSubject
                     ->withPivot(['salary'])
                     ->withTimestamps();
     }
+
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class, 'project_staff', 'staff_id', 'project_id')
+                    ->withPivot('salary', 'role')
+                    ->withTimestamps();
+    }
 }
