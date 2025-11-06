@@ -29,7 +29,6 @@ class AuthStore extends FormRequest
             'salary' => 'nullable',
             'password' => 'required',
             'address' => 'required',
-            'role' => 'in:boss,staff|nullable',
         ];
     }
 

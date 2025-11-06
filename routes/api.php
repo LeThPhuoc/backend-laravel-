@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Backend\Api\AuthControllerApi;
+use App\Http\Controllers\Backend\Api\ProjectControllerApi;
 
 Route::get('/users', [AuthControllerApi::class, 'index']);
 Route::post('/login', [AuthControllerApi::class, 'login']);
@@ -11,4 +12,5 @@ Route::middleware('jwt.auth')->group(function () {
     Route::post('/logout', [AuthControllerApi::class, 'logout']);
     Route::post('/create_staff', [AuthControllerApi::class, 'createStaff']);
     Route::get('/get_list_staff', [AuthControllerApi::class, 'getListStaff']);
+    Route::post('/create_project/{id}', [ProjectControllerApi::class, 'store']);
 });

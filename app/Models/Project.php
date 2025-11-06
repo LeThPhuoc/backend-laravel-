@@ -11,7 +11,7 @@ class Project extends Model
 
     protected $fillable = ['name', 'description', 'start_date', 'end_date'];
 
-    public function bosses()
+    public function boss()
     {
         return $this->belongsToMany(Boss::class, 'boss_project', 'project_id', 'boss_id')
                     ->withPivot('role')
