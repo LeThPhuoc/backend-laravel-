@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Backend\Api\AuthControllerApi;
-use App\Http\Controllers\Backend\Api\ProjectControllerApi;
+use App\Http\Controllers\Backend\Api\Project\ProjectControllerApi;
 
 Route::get('/users', [AuthControllerApi::class, 'index']);
 Route::post('/login', [AuthControllerApi::class, 'login']);

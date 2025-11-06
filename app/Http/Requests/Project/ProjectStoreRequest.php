@@ -19,7 +19,7 @@ class ProjectStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|unique:users,name',
+            'name' => 'required|string|unique:projects,name',
             'description' => 'required|string',
             'start_date' => 'nullable|string',
             'end_date' => 'nullable|string',
@@ -29,8 +29,8 @@ class ProjectStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Bạn chưa nhập vào Tên.',
-            'name.unique' => 'Tên đã được tạo trước đó.',
+            'name.required' => 'Bạn chưa nhập vào Tên dự án.',
+            'name.unique' => 'Tên dự án đã được tạo trước đó.',
             'description.required' => 'Bạn chưa nhập Mô tả.',
         ];
     }
