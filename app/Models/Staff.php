@@ -24,7 +24,7 @@ class Staff extends Authenticatable implements JWTSubject
     protected $table = 'staff';
     protected $fillable = ['name','tel','address','login_name','email','password',];
 
-    protected $hidden = ['password'];
+    protected $hidden = ['password', 'email_verified_at', 'created_at', 'pivot', 'remember_token', 'updated_at'];
 
     public function bosses()
     {
@@ -35,7 +35,7 @@ class Staff extends Authenticatable implements JWTSubject
 
     public function projects()
     {
-        return $this->belongsToMany(Project::class, 'project_staff', 'staff_id', 'project_id')
+        return $this->belongsToMany(Project::class, 'staff_project', 'staff_id', 'project_id')
                     ->withPivot('salary', 'role')
                     ->withTimestamps();
     }

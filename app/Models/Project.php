@@ -20,8 +20,14 @@ class Project extends Model
 
     public function staff()
     {
-        return $this->belongsToMany(Staff::class, 'project_staff', 'project_id', 'staff_id')
+        return $this->belongsToMany(Staff::class, 'staff_project', 'project_id', 'staff_id')
                     ->withPivot('salary', 'role')
                     ->withTimestamps();
     }
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'pivot'
+    ];
 }

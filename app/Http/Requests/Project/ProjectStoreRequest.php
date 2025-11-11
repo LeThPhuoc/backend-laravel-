@@ -20,6 +20,7 @@ class ProjectStoreRequest extends FormRequest
     {
         return [
             'name' => 'required|string|unique:projects,name',
+            'address' => 'required|string|unique:projects,address',
             'description' => 'required|string',
             'start_date' => 'nullable|string',
             'end_date' => 'nullable|string',
@@ -31,6 +32,8 @@ class ProjectStoreRequest extends FormRequest
         return [
             'name.required' => 'Bạn chưa nhập vào Tên dự án.',
             'name.unique' => 'Tên dự án đã được tạo trước đó.',
+            'address.required' => 'Bạn chưa nhập vào Địa chỉ dự án.',
+            'address.unique' => 'Địa chỉ dự án đã được tạo trước đó.',
             'description.required' => 'Bạn chưa nhập Mô tả.',
         ];
     }

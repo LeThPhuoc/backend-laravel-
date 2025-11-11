@@ -19,9 +19,10 @@ class ProjectControllerApi extends Controller
 
 
     public function store(ProjectStoreRequest $request, $bossId){
-        $post = $request->only('name', 'description', 'start_date', 'end_date');
+        $post = $request->only('name', 'description', 'start_date', 'end_date', 'address');
         $project = Project::create([
             'name' => $post['name'],
+            'address' => $post['address'],
             'description' => $post['description'],
             'start_date' => $post['start_date'],
             'end_date' => $post['end_date'],
@@ -35,7 +36,32 @@ class ProjectControllerApi extends Controller
         
     }
 
-    public function getListProject() {
+    public function getListProject($role, $id) {
+        switch($role) {
+            case 'boss': {
+                $projects = Boss::with('projects')->findOrFail($id);
+            }
+                break;
+            case 'staff': {
+                $projects = Staff::with('projects')->findOrFail($id);
+            }
+                break;
+        }
         
+        if(!count($projects->projects)) {
+            return response()->json([
+                'message' => ['không có dự án nào']
+            ]);
+        }
+
+        foreach($projects->projects as $val) {
+            $val->staff;
+            $val->boss;
+
+        }
+
+        return response()->json(
+            $projects->projects
+        );
     }
 }

@@ -24,7 +24,14 @@ class Boss extends Authenticatable implements JWTSubject
     protected $table = 'boss';
     protected $fillable = ['name','tel','address','login_name','email','password',];
 
-    protected $hidden = ['password'];
+    protected $hidden = [
+        'password',
+        'remember_token', 
+        'email_verified_at', 
+        'created_at', 
+        'updated_at',
+        'pivot',
+    ];
 
     public function staffs()
     {
