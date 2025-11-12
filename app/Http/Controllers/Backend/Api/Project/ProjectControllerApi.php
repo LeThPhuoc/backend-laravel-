@@ -57,7 +57,10 @@ class ProjectControllerApi extends Controller
         foreach($projects->projects as $val) {
             $val->staff;
             $val->boss;
-
+            foreach($val->staff as $staff) {
+                $staff->role = $staff->pivot->role;   
+                $staff->salary = $staff->pivot->salary;   
+            }
         }
 
         return response()->json(

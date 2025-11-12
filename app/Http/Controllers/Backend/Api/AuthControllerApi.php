@@ -27,33 +27,15 @@ class AuthControllerApi extends Controller
         ];
         foreach($this->guards as $guard) {
             if ($token = auth($guard)->attempt($credentials)) {
-            return response()->json([
-                'token' => $token,
-                'expires_in' => auth($guard)->factory()->getTTL() * 60,
-                'type' => "bearer",
-                'user' => auth($guard)->user(),
-                'role' => $guard
-            ]);
+                return response()->json([
+                    'token' => $token,
+                    'expires_in' => auth($guard)->factory()->getTTL() * 60,
+                    'type' => "bearer",
+                    'user' => auth($guard)->user(),
+                    'role' => $guard
+                ]);
+            }
         }
-        }
-        // if ($token = auth('boss')->attempt($credentials)) {
-        //     return response()->json([
-        //         'token' => $token,
-        //         'expires_in' => auth('boss')->factory()->getTTL() * 60,
-        //         'type' => "bearer",
-        //         'user' => auth('boss')->user(),
-        //         'role' => 'boss'
-        //     ]);
-        // }
-        // if ($token = auth('staff')->attempt($credentials)) {
-        //     return response()->json([
-        //         'token' => $token,
-        //         'expires_in' => auth('staff')->factory()->getTTL() * 60,
-        //         'type' => "bearer",
-        //         'user' => auth('staff')->user(),
-        //         'role' => 'staff'
-        //     ]);
-        // }
 
         return $this->handleLoginFailure($request);
     }
@@ -80,7 +62,7 @@ class AuthControllerApi extends Controller
     }
 
     public function createStaff(AuthStore $request){
-        $post = $request->only('name', 'login_name', 'tel', 'password', 'address', 'email', 'role');
+        $post = $request->only('name', 'login_name', 'tel', 'password', 'address', 'email');
         $boss = auth('boss')->user();
         $exists = Boss::where('email', $post['email'])->orWhere('login_name', $post['login_name'])->exists() ||
                 Staff::where('email', $post['email'])->orWhere('login_name', $post['login_name'])->exists();
@@ -98,7 +80,6 @@ class AuthControllerApi extends Controller
             'email' => $post['email'],
         ]);
 
-        $boss->staffs()->attach($staff->id, ['role' => $post['role']]);
         
         return response()->json([
             'message' => ['Successfully created account!']
@@ -108,14 +89,6 @@ class AuthControllerApi extends Controller
     public function getListStaff() {
         $boss = auth('boss')->user();
         $staffs = Boss::with('staffs')->findOrFail($boss->id);
-        foreach($staffs->staffs as $staff) {
-            $staff->role = $staff->pivot->role;
-            unset($staff->pivot);
-            unset($staff->email_verified_at);
-            unset($staff->remember_token);
-            unset($staff->created_at);
-            unset($staff->updated_at);
-        }
         return response()->json([
             'staffs' => $staffs->staffs
         ]);
