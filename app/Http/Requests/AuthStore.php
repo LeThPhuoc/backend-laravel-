@@ -26,7 +26,7 @@ class AuthStore extends FormRequest
             'login_name' => 'required',
             'email' => 'required|email',
             'tel' => 'required|max:11',
-            'salary' => 'nullable',
+            'role' => 'nullable',
             'password' => 'required',
             'address' => 'required',
         ];

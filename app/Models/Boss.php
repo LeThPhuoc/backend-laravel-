@@ -36,7 +36,7 @@ class Boss extends Authenticatable implements JWTSubject
     public function staffs()
     {
         return $this->belongsToMany(Staff::class, 'boss_staff')
-                    ->withPivot(['salary'])
+                    ->withPivot(['role'])
                     ->withTimestamps();
     }
 

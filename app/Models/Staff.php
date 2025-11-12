@@ -29,7 +29,7 @@ class Staff extends Authenticatable implements JWTSubject
     public function bosses()
     {
         return $this->belongsToMany(Boss::class, 'boss_staff')
-                    ->withPivot(['salary'])
+                    ->withPivot(['role'])
                     ->withTimestamps();
     }
 

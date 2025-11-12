@@ -80,7 +80,7 @@ class AuthControllerApi extends Controller
     }
 
     public function createStaff(AuthStore $request){
-        $post = $request->only('name', 'login_name', 'tel', 'password', 'address', 'email', 'salary');
+        $post = $request->only('name', 'login_name', 'tel', 'password', 'address', 'email', 'role');
         $boss = auth('boss')->user();
         $exists = Boss::where('email', $post['email'])->orWhere('login_name', $post['login_name'])->exists() ||
                 Staff::where('email', $post['email'])->orWhere('login_name', $post['login_name'])->exists();
@@ -98,7 +98,7 @@ class AuthControllerApi extends Controller
             'email' => $post['email'],
         ]);
 
-        $boss->staffs()->attach($staff->id, ['salary' => $post['salary']]);
+        $boss->staffs()->attach($staff->id, ['role' => $post['role']]);
         
         return response()->json([
             'message' => ['Successfully created account!']
@@ -109,7 +109,7 @@ class AuthControllerApi extends Controller
         $boss = auth('boss')->user();
         $staffs = Boss::with('staffs')->findOrFail($boss->id);
         foreach($staffs->staffs as $staff) {
-            $staff->salary = rtrim(rtrim($staff->pivot->salary, '0'), '.');
+            $staff->role = $staff->pivot->role;
             unset($staff->pivot);
             unset($staff->email_verified_at);
             unset($staff->remember_token);
