@@ -61,9 +61,8 @@ class AuthControllerApi extends Controller
         ]);
     }
 
-    public function createStaff(AuthStore $request){
+    public function createStaff(AuthStore $request, $bossId){
         $post = $request->only('name', 'login_name', 'tel', 'password', 'address', 'email');
-        $boss = auth('boss')->user();
         $exists = Boss::where('email', $post['email'])->orWhere('login_name', $post['login_name'])->exists() ||
                 Staff::where('email', $post['email'])->orWhere('login_name', $post['login_name'])->exists();
 
@@ -80,18 +79,16 @@ class AuthControllerApi extends Controller
             'email' => $post['email'],
         ]);
 
+        $staff->bosses()->attach($bossId);
         
-        return response()->json([
-            'message' => ['Successfully created account!']
-        ]);
+        return response()->json($staff);
     }
 
-    public function getListStaff() {
-        $boss = auth('boss')->user();
-        $staffs = Boss::with('staffs')->findOrFail($boss->id);
-        return response()->json([
-            'staffs' => $staffs->staffs
-        ]);
+    public function getListStaff($bossId) {
+        $staffs = Boss::with('staffs')->findOrFail($bossId);
+        return response()->json(
+            $staffs->staffs
+        );
     }
 
     public function logout(){

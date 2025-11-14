@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend\Api\Project;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\Project\ProjectStoreRequest;
+use App\Http\Requests\Project\AddStaffProjectRequest;
 use App\Models\Boss;
 use App\Models\Staff;
 use App\Models\Project;
@@ -32,8 +33,17 @@ class ProjectControllerApi extends Controller
         ]);
     }
 
-    public function addStaff($request){
-        
+    public function addStaff(AddStaffProjectRequest $request, $projectId){
+        $project = Project::findOrFail($projectId);
+        $post = $request->only('staffs');
+        foreach($post['staffs'] as $staff) {
+            $project->staff()->attach([
+                $staff['id'] => [
+                    'role' => $staff['role'],
+                    'salary' => $staff['salary']
+                ]
+                ]);
+        }
     }
 
     public function getListProject($role, $id) {
