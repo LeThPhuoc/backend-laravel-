@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\Project\ProjectStoreRequest;
 use App\Http\Requests\Project\AddStaffProjectRequest;
+use App\Http\Requests\Project\DeleteStaffFromProjectRequest;
 use App\Models\Boss;
 use App\Models\Staff;
 use App\Models\Project;
@@ -87,5 +88,14 @@ class ProjectControllerApi extends Controller
         return response()->json(
             $projects
         );
+    }
+
+    public function deleteStaffFromProject(DeleteStaffFromProject $request, $projectId) {
+        $staffId = $request->input('staff_id');
+        $project =Project::findOrFail($projectId);
+        $project->staff()->detach($staffId);
+        return response()->json([
+            'message' => ['Xóa nhân viên khỏi dự án thành công']
+        ], Response::HTTP_OK);
     }
 }
