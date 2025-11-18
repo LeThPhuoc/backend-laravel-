@@ -77,4 +77,15 @@ class ProjectControllerApi extends Controller
             $projects->projects
         );
     }
+
+    public function getProjectDetail($id) {
+        $projects = Project::with('boss', 'staff')->findOrFail($id);
+        foreach($projects->staff as $val) {
+            $val->role = $val->pivot->role;   
+            $val->salary = $val->pivot->salary;   
+        }
+        return response()->json(
+            $projects
+        );
+    }
 }

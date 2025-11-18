@@ -16,5 +16,6 @@ Route::middleware('jwt.auth')->group(function () {
         Route::post('/create_project/{id}', [ProjectControllerApi::class, 'store']);
         Route::post('/{id}/add-staff', [ProjectControllerApi::class, 'addStaff']);
         Route::get('/get_project/{role}/{id}', [ProjectControllerApi::class, 'getListProject']);
+        Route::get('/{id}/detail', [ProjectControllerApi::class, 'getProjectDetail']);
     });
 });
