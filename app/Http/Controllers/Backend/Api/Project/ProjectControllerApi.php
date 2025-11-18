@@ -90,7 +90,7 @@ class ProjectControllerApi extends Controller
         );
     }
 
-    public function deleteStaffFromProject(DeleteStaffFromProject $request, $projectId) {
+    public function deleteStaffFromProject(DeleteStaffFromProjectRequest $request, $projectId) {
         $staffId = $request->input('staff_id');
         $project =Project::findOrFail($projectId);
         $project->staff()->detach($staffId);
