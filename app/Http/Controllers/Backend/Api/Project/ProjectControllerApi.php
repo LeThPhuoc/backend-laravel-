@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\Project\ProjectStoreRequest;
 use App\Http\Requests\Project\AddStaffProjectRequest;
 use App\Http\Requests\Project\DeleteStaffFromProjectRequest;
+use App\Http\Requests\Project\EditStaffBossProjectRequest;
 use App\Models\Boss;
 use App\Models\Staff;
 use App\Models\Project;
@@ -85,6 +86,9 @@ class ProjectControllerApi extends Controller
             $val->role = $val->pivot->role;   
             $val->salary = $val->pivot->salary;   
         }
+        foreach($projects->boss as $val) {
+            $val->role = $val->pivot->role;   
+        }
         return response()->json(
             $projects
         );
@@ -97,5 +101,27 @@ class ProjectControllerApi extends Controller
         return response()->json([
             'message' => ['Xóa nhân viên khỏi dự án thành công']
         ], Response::HTTP_OK);
+    }
+
+    public function editStaffBossInProject(Request $request, $project_id, $role, $id) {
+        $project = Project::findOrFail($project_id);
+        if($role == 'staff') {
+            $post = $request->only('role', 'salary');
+            $project->staff()->updateExistingPivot($id, [
+                'role' => $post['role'],
+                'salary' => $post['salary']
+            ]);
+            return response()->json([
+                'message' => ['Sửa nhân viên dự án thành công']
+            ], Response::HTTP_OK);
+        } else if($role == 'boss') {
+            $post = $request->only('role');
+            $project->boss()->updateExistingPivot($id, [
+                'role' => $post['role'],
+            ]);
+            return response()->json([
+                'message' => ['Sửa quản lý dự án thành công']
+            ], Response::HTTP_OK);
+        }
     }
 }
