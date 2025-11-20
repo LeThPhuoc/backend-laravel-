@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend\Api\Project;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\Project\ProjectStoreRequest;
+use App\Http\Requests\Project\EditProjectRequest;
 use App\Http\Requests\Project\AddStaffProjectRequest;
 use App\Http\Requests\Project\DeleteStaffFromProjectRequest;
 use App\Http\Requests\Project\EditStaffBossProjectRequest;
@@ -123,5 +124,20 @@ class ProjectControllerApi extends Controller
                 'message' => ['Sửa quản lý dự án thành công']
             ], Response::HTTP_OK);
         }
+    }
+
+    public function editProject(EditProjectRequest $request, $project_id) {
+        $project = Project::findOrFail($project_id);
+        $post = $request->only('name', 'description', 'start_date', 'end_date', 'address');
+        $project->update([
+            'name' => $post['name'],
+            'address' => $post['address'],
+            'description' => $post['description'],
+            'start_date' => $post['start_date'],
+            'end_date' => $post['end_date'],
+        ]);
+        return response()->json([
+            'message' => ['Cập nhật dự án thành công']
+        ], Response::HTTP_OK);
     }
 }
