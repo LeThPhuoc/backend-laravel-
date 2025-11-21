@@ -49,14 +49,23 @@ class ProjectControllerApi extends Controller
         }
     }
 
-    public function getListProject($role, $id) {
+    public function getListProject(Request $request, $role, $id) {
+        $search = $request->query('search');
         switch($role) {
             case 'boss': {
-                $projects = Boss::with('projects')->findOrFail($id);
+                $projects = Boss::with(['projects' => function ($q) use ($search) {
+                    if ($search) {
+                        $q->where('name', 'LIKE', "%$search%");
+                    }
+                }])->findOrFail($id);
             }
                 break;
             case 'staff': {
-                $projects = Staff::with('projects')->findOrFail($id);
+                $projects = Staff::with(['projects' => function ($q) use ($search) {
+                    if ($search) {
+                        $q->where('name', 'LIKE', "%$search%");
+                    }
+                }])->findOrFail($id);
             }
                 break;
         }

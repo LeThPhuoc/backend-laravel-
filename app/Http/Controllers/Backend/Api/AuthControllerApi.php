@@ -84,8 +84,13 @@ class AuthControllerApi extends Controller
         return response()->json($staff);
     }
 
-    public function getListStaff($bossId) {
-        $staffs = Boss::with('staffs')->findOrFail($bossId);
+    public function getListStaff(Request $request, $bossId) {
+        $search = $request->query('search');
+        $staffs = Boss::with(['staffs' => function ($p) use ($search) {
+            if ($search) {
+                $p->where('name', 'LIKE', "%$search%");
+            }
+        }])->findOrFail($bossId);
         return response()->json(
             $staffs->staffs
         );
