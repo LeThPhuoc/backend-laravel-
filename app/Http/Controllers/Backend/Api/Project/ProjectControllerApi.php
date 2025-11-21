@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\Project\ProjectStoreRequest;
 use App\Http\Requests\Project\EditProjectRequest;
 use App\Http\Requests\Project\AddStaffProjectRequest;
-use App\Http\Requests\Project\DeleteStaffFromProjectRequest;
+use App\Http\Requests\Project\DeleteStaffBossFromProjectRequest;
 use App\Http\Requests\Project\EditStaffBossProjectRequest;
 use App\Models\Boss;
 use App\Models\Staff;
@@ -104,10 +104,11 @@ class ProjectControllerApi extends Controller
         );
     }
 
-    public function deleteStaffFromProject(DeleteStaffFromProjectRequest $request, $projectId) {
-        $staffId = $request->input('staff_id');
+    public function deleteStaffBossFromProject(DeleteStaffBossFromProjectRequest $request, $projectId) {
+        $post = $request->only('staff_id', 'boss_id');
         $project =Project::findOrFail($projectId);
-        $project->staff()->detach($staffId);
+        $project->staff()->detach($post['staff_id']);
+        $project->boss()->detach($post['boss_id']);
         return response()->json([
             'message' => ['Xóa nhân viên khỏi dự án thành công']
         ], Response::HTTP_OK);
@@ -147,6 +148,14 @@ class ProjectControllerApi extends Controller
         ]);
         return response()->json([
             'message' => ['Cập nhật dự án thành công']
+        ], Response::HTTP_OK);
+    }
+
+    public function deleteProject($project_id) {
+        $project = Project::findOrFail($project_id);
+        $project->delete();
+        return response()->json([
+            'message' => ['Xóa dự án thành công']
         ], Response::HTTP_OK);
     }
 }

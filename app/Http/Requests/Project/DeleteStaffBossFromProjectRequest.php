@@ -4,7 +4,7 @@ namespace App\Http\Requests\Project;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DeleteStaffFromProjectRequest extends FormRequest
+class DeleteStaffBossFromProjectRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -19,9 +19,12 @@ class DeleteStaffFromProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'staff_id' => ['required','array'],
+            'staff_id' => ['nullable','array'],
             'staffs.*' => ['required', 'array'],
-            'staffs.*.id' => ['required', 'string']
+            'staffs.*.id' => ['required', 'string'],
+            'boss_id' => ['nullable','array'],
+            'bosss.*' => ['required', 'array'],
+            'bosss.*.id' => ['required', 'string']
         ];
     }
 
