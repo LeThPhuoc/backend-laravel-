@@ -4,7 +4,7 @@ namespace App\Http\Requests\Project;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AddStaffProjectRequest extends FormRequest
+class AddStaffBossProjectRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -19,11 +19,15 @@ class AddStaffProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'staffs' => ['required','array'],
+            'staffs' => ['nullable','array'],
             'staffs.*' => ['required', 'array'],
             'staffs.*.id' => ['required', 'string'],
             'staffs.*.salary' => ['required', 'string'],
             'staffs.*.role' => ['required', 'string'],
+            'bosses' => ['nullable','array'],
+            'bosses.*' => ['required', 'array'],
+            'bosses.*.id' => ['required', 'string'],
+            'bosses.*.role' => ['required', 'string'],
         ];
     }
 

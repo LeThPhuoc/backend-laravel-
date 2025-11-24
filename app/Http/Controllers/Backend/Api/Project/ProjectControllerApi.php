@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\Project\ProjectStoreRequest;
 use App\Http\Requests\Project\EditProjectRequest;
-use App\Http\Requests\Project\AddStaffProjectRequest;
+use App\Http\Requests\Project\AddStaffBossProjectRequest;
 use App\Http\Requests\Project\DeleteStaffBossFromProjectRequest;
 use App\Http\Requests\Project\EditStaffBossProjectRequest;
 use App\Models\Boss;
@@ -36,7 +36,7 @@ class ProjectControllerApi extends Controller
         ]);
     }
 
-    public function addStaff(AddStaffProjectRequest $request, $projectId){
+    public function addStaffBoss(AddStaffBossProjectRequest $request, $projectId){
         $project = Project::findOrFail($projectId);
         $post = $request->only('staffs');
         foreach($post['staffs'] as $staff) {
