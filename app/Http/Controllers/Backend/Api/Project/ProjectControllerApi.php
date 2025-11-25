@@ -51,7 +51,7 @@ class ProjectControllerApi extends Controller
         }
         if(count($post['bosses'])) {
             foreach($post['bosses'] as $staff) {
-                $project->staff()->attach([
+                $project->boss()->attach([
                 $staff['id'] => [
                     'role' => $staff['role'],
                     ]
