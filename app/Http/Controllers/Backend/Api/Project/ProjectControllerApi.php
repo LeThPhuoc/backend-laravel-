@@ -38,14 +38,25 @@ class ProjectControllerApi extends Controller
 
     public function addStaffBoss(AddStaffBossProjectRequest $request, $projectId){
         $project = Project::findOrFail($projectId);
-        $post = $request->only('staffs');
-        foreach($post['staffs'] as $staff) {
-            $project->staff()->attach([
+        $post = $request->only('staffs', 'bosses');
+        if(count($post['staffs'])) {
+            foreach($post['staffs'] as $staff) {
+                $project->staff()->attach([
+                    $staff['id'] => [
+                        'role' => $staff['role'],
+                        'salary' => $staff['salary']
+                    ]
+                    ]);
+            }
+        }
+        if(count($post['bosses'])) {
+            foreach($post['bosses'] as $staff) {
+                $project->staff()->attach([
                 $staff['id'] => [
                     'role' => $staff['role'],
-                    'salary' => $staff['salary']
-                ]
+                    ]
                 ]);
+            }
         }
     }
 
@@ -157,5 +168,33 @@ class ProjectControllerApi extends Controller
         return response()->json([
             'message' => ['Xóa dự án thành công']
         ], Response::HTTP_OK);
+    }
+
+    public function getStaffNotInProject(Request $request, $project_id) {
+        $search = $request->input('search');
+        $staffs = Staff::whereDoesntHave('projects' , function ($q) use ($project_id) {
+            $q->where('projects.id', $project_id);
+        })
+        ->when($search, function($q) use ($search) {
+            $q->where("name", "LIKE", "%$search%");
+        })
+        ->get();
+        return response()->json(
+            $staffs
+        , Response::HTTP_OK);
+    }
+
+    public function getBossNotInProject(Request $request, $project_id) {
+        $search = $request->input('search');
+        $bosses = Boss::whereDoesntHave('projects' , function ($q) use ($project_id) {
+            $q->where('projects.id', $project_id);
+        })
+        ->when($search, function($q) use ($search) {
+            $q->where("name", "LIKE", "%$search%");
+        })
+        ->get();
+        return response()->json(
+            $bosses
+        , Response::HTTP_OK);
     }
 }
