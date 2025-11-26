@@ -48,6 +48,9 @@ class ProjectControllerApi extends Controller
                     ]
                     ]);
             }
+            return response()->json([
+            'message' => ['Thêm nhân viên thành công']
+        ], Response::HTTP_OK);
         }
         if(count($post['bosses'])) {
             foreach($post['bosses'] as $staff) {
@@ -57,6 +60,9 @@ class ProjectControllerApi extends Controller
                     ]
                 ]);
             }
+            return response()->json([
+            'message' => ['Thêm quản lí thành công']
+        ], Response::HTTP_OK);
         }
     }
 
@@ -79,12 +85,6 @@ class ProjectControllerApi extends Controller
                 }])->findOrFail($id);
             }
                 break;
-        }
-        
-        if(!count($projects->projects)) {
-            return response()->json([
-                'message' => ['không có dự án nào']
-            ]);
         }
 
         foreach($projects->projects as $val) {
@@ -170,9 +170,12 @@ class ProjectControllerApi extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function getStaffNotInProject(Request $request, $project_id) {
+    public function getStaffNotInProject(Request $request, $project_id, $boss_id) {
         $search = $request->input('search');
-        $staffs = Staff::whereDoesntHave('projects' , function ($q) use ($project_id) {
+        $staffs = Staff::whereHas('bosses', function ($q) use ($boss_id) {
+            $q->where('boss_id', $boss_id);
+        })
+        ->whereDoesntHave('projects' , function ($q) use ($project_id) {
             $q->where('projects.id', $project_id);
         })
         ->when($search, function($q) use ($search) {
