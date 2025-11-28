@@ -85,14 +85,16 @@ class AuthControllerApi extends Controller
     }
 
     public function getListStaff(Request $request, $bossId) {
+        $perPage = $request->input('per_page', 20);
         $search = $request->query('search');
-        $staffs = Boss::with(['staffs' => function ($p) use ($search) {
-            if ($search) {
-                $p->where('name', 'LIKE', "%$search%");
-            }
-        }])->findOrFail($bossId);
+        $boss = Boss::findOrFail($bossId);
+        $staffs = $boss->staffs()
+        ->when($search, function ($q) use ($search) {
+            $q->where('name', 'LIKE', "%$search%");
+        })
+        ->paginate($perPage);
         return response()->json(
-            $staffs->staffs
+            $staffs->items()
         );
     }
 

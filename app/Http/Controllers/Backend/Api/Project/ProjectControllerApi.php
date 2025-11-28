@@ -70,35 +70,26 @@ class ProjectControllerApi extends Controller
         $search = $request->query('search');
         switch($role) {
             case 'boss': {
-                $projects = Boss::with(['projects' => function ($q) use ($search) {
-                    if ($search) {
-                        $q->where('name', 'LIKE', "%$search%");
-                    }
-                }])->findOrFail($id);
+                $boss = Boss::findOrFail($id);
+                $projects = $boss->projects()->when($search, function ($q) use ($search) {
+                    $q->where('name', 'LIKE', "%$search%");
+                })->paginate(5);
+                return response()->json(
+                    $projects->items()
+                );
             }
                 break;
             case 'staff': {
-                $projects = Staff::with(['projects' => function ($q) use ($search) {
-                    if ($search) {
-                        $q->where('name', 'LIKE', "%$search%");
-                    }
-                }])->findOrFail($id);
+                $staff = Staff::findOrFail($id);
+                $projects = $staff->projects()->when($search, function ($q) use ($search) {
+                    $q->where('name', 'LIKE', "%$search%");
+                })->paginate(5);
+                return response()->json(
+                    $projects->items()
+                );
             }
                 break;
         }
-
-        foreach($projects->projects as $val) {
-            $val->staff;
-            $val->boss;
-            foreach($val->staff as $staff) {
-                $staff->role = $staff->pivot->role;   
-                $staff->salary = $staff->pivot->salary;   
-            }
-        }
-
-        return response()->json(
-            $projects->projects
-        );
     }
 
     public function getProjectDetail($id) {
@@ -121,7 +112,7 @@ class ProjectControllerApi extends Controller
         $project->staff()->detach($post['staff_id']);
         $project->boss()->detach($post['boss_id']);
         return response()->json([
-            'message' => ['Xóa nhân viên khỏi dự án thành công']
+            'message' => ['Xóa thành viên khỏi dự án thành công']
         ], Response::HTTP_OK);
     }
 
@@ -181,9 +172,9 @@ class ProjectControllerApi extends Controller
         ->when($search, function($q) use ($search) {
             $q->where("name", "LIKE", "%$search%");
         })
-        ->get();
+        ->paginate(20);
         return response()->json(
-            $staffs
+            $staffs->items()
         , Response::HTTP_OK);
     }
 
@@ -195,9 +186,9 @@ class ProjectControllerApi extends Controller
         ->when($search, function($q) use ($search) {
             $q->where("name", "LIKE", "%$search%");
         })
-        ->get();
+        ->paginate(20);
         return response()->json(
-            $bosses
+            $bosses->items()
         , Response::HTTP_OK);
     }
 }
