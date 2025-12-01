@@ -74,9 +74,11 @@ class ProjectControllerApi extends Controller
                 $projects = $boss->projects()->when($search, function ($q) use ($search) {
                     $q->where('name', 'LIKE', "%$search%");
                 })->paginate(5);
-                return response()->json(
-                    $projects->items()
-                );
+                return response()->json([
+                    'data' => $projects->items(),
+                    'page' => $projects->currentPage(),
+                    'last_page' => $projects->lastPage()
+                ]);
             }
                 break;
             case 'staff': {
@@ -84,9 +86,11 @@ class ProjectControllerApi extends Controller
                 $projects = $staff->projects()->when($search, function ($q) use ($search) {
                     $q->where('name', 'LIKE', "%$search%");
                 })->paginate(5);
-                return response()->json(
-                    $projects->items()
-                );
+                return response()->json([
+                    'data' => $projects->items(),
+                    'page' => $projects->currentPage(),
+                    'last_page' => $projects->lastPage()
+                ]);
             }
                 break;
         }
