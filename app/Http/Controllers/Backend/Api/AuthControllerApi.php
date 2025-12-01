@@ -93,9 +93,11 @@ class AuthControllerApi extends Controller
             $q->where('name', 'LIKE', "%$search%");
         })
         ->paginate($perPage);
-        return response()->json(
-            $staffs->items()
-        );
+        return response()->json([
+            'data' => $staffs->items(),
+            'page' => $staffs->currentPage(),
+            'last_page' => $staffs->lastPage()
+        ]);
     }
 
     public function logout(){
