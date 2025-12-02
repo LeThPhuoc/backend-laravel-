@@ -8,7 +8,7 @@ use App\Http\Controllers\Backend\Api\Project\ProjectControllerApi;
 Route::get('/users', [AuthControllerApi::class, 'index']);
 Route::post('/login', [AuthControllerApi::class, 'login']);
 Route::post('/store', [AuthControllerApi::class, 'store']);
-Route::middleware('jwt.auth')->group(function () {
+Route::middleware('jwt.any')->group(function () {
     Route::post('/logout', [AuthControllerApi::class, 'logout']);
     Route::post('/create_staff/{id}', [AuthControllerApi::class, 'createStaff']);
     Route::get('/get_list_staff/{id}', [AuthControllerApi::class, 'getListStaff']);

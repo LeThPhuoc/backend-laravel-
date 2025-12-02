@@ -25,14 +25,27 @@ class AuthControllerApi extends Controller
             'login_name' => $request->input('login_name'),
             'password' => $request->input('password')
         ];
-        foreach($this->guards as $guard) {
-            if ($token = auth($guard)->attempt($credentials)) {
+
+        $boss = Boss::where('login_name', $request->input('login_name'))->exists();
+        $staff = Staff::where('login_name', $request->input('login_name'))->exists();
+
+        if($boss) {
+            if ($token = auth('boss')->attempt($credentials)) {
                 return response()->json([
                     'token' => $token,
-                    'expires_in' => auth($guard)->factory()->getTTL() * 60,
                     'type' => "bearer",
-                    'user' => auth($guard)->user(),
-                    'role' => $guard
+                    'user' => auth('boss')->user(),
+                    'role' => 'boss'
+                ]);
+            }
+        }
+        if($staff) {
+            if ($token = auth('staff')->attempt($credentials)) {
+                return response()->json([
+                    'token' => $token,
+                    'type' => "bearer",
+                    'user' => auth('staff')->user(),
+                    'role' => 'staff'
                 ]);
             }
         }
