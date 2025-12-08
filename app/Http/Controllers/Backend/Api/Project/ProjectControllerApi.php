@@ -68,12 +68,13 @@ class ProjectControllerApi extends Controller
 
     public function getListProject(Request $request, $role, $id) {
         $search = $request->query('search');
+        $perPage = $request->input('per_page', 5);
         switch($role) {
             case 'boss': {
                 $boss = Boss::findOrFail($id);
                 $projects = $boss->projects()->when($search, function ($q) use ($search) {
                     $q->where('name', 'LIKE', "%$search%");
-                })->paginate(5);
+                })->paginate($perPage);
                 return response()->json([
                     'data' => $projects->items(),
                     'page' => $projects->currentPage(),
@@ -85,7 +86,7 @@ class ProjectControllerApi extends Controller
                 $staff = Staff::findOrFail($id);
                 $projects = $staff->projects()->when($search, function ($q) use ($search) {
                     $q->where('name', 'LIKE', "%$search%");
-                })->paginate(5);
+                })->paginate($perPage);
                 return response()->json([
                     'data' => $projects->items(),
                     'page' => $projects->currentPage(),
@@ -167,6 +168,7 @@ class ProjectControllerApi extends Controller
 
     public function getStaffNotInProject(Request $request, $project_id, $boss_id) {
         $search = $request->input('search');
+        $perPage = $request->input('per_page', 20);
         $staffs = Staff::whereHas('bosses', function ($q) use ($boss_id) {
             $q->where('boss_id', $boss_id);
         })
@@ -176,7 +178,7 @@ class ProjectControllerApi extends Controller
         ->when($search, function($q) use ($search) {
             $q->where("name", "LIKE", "%$search%");
         })
-        ->paginate(20);
+        ->paginate($perPage);
         return response()->json(
             $staffs->items()
         , Response::HTTP_OK);
@@ -184,13 +186,14 @@ class ProjectControllerApi extends Controller
 
     public function getBossNotInProject(Request $request, $project_id) {
         $search = $request->input('search');
+        $perPage = $request->input('per_page', 20);
         $bosses = Boss::whereDoesntHave('projects' , function ($q) use ($project_id) {
             $q->where('projects.id', $project_id);
         })
         ->when($search, function($q) use ($search) {
             $q->where("name", "LIKE", "%$search%");
         })
-        ->paginate(20);
+        ->paginate($perPage);
         return response()->json(
             $bosses->items()
         , Response::HTTP_OK);
