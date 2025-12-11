@@ -38,4 +38,9 @@ class Staff extends Authenticatable implements JWTSubject
                     ->withPivot('salary', 'role')
                     ->withTimestamps();
     }
+
+    public function checkLogs()
+    {
+        return $this->hasMany(CheckLog::class);
+    }
 }

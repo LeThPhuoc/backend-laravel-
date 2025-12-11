@@ -25,6 +25,11 @@ class Project extends Model
                     ->withTimestamps();
     }
 
+    public function checkLogs()
+    {
+        return $this->hasMany(CheckLog::class);
+    }
+
     protected $hidden = [
         'created_at',
         'updated_at',
