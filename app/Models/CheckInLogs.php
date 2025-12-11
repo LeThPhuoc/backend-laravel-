@@ -11,6 +11,8 @@ class CheckInLogs extends Model
     //
     use HasFactory;
 
+    protected $fillable = ['checkin', 'checkout'];
+
     public function staff()
     {
         return $this->belongsTo(Staff::class);
