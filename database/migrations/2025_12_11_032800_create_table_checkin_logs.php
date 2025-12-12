@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('checkin_logs', function (Blueprint $table) {
+        Schema::create('check_logs', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('project_id');
             $table->unsignedBigInteger('staff_id');
-            $table->string('checkin')->nullable();
-            $table->string('checkout')->nullable();
+            $table->string('checkin_time')->nullable();
+            $table->string('checkout_time')->nullable();
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
             $table->foreign('staff_id')->references('id')->on('staff')->onDelete('cascade');
             $table->timestamps();
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('checkin_logs');
+        Schema::dropIfExists('check_logs');
     }
 };

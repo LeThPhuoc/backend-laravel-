@@ -27,7 +27,7 @@ class Project extends Model
 
     public function checkLogs()
     {
-        return $this->hasMany(CheckLog::class);
+        return $this->hasMany(CheckLogs::class);
     }
 
     protected $hidden = [

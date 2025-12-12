@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Backend\Api\AuthControllerApi;
 use App\Http\Controllers\Backend\Api\Project\ProjectControllerApi;
+use App\Http\Controllers\Backend\Api\CheckLogControllerApi;
 
 Route::get('/users', [AuthControllerApi::class, 'index']);
 Route::post('/login', [AuthControllerApi::class, 'login']);
@@ -23,5 +24,8 @@ Route::middleware('jwt.any')->group(function () {
         Route::post('/{project_id}/edit_{role}/{id}', [ProjectControllerApi::class, 'editStaffBossInProject']);
         Route::post('/{project_id}/edit', [ProjectControllerApi::class, 'editProject']);
         Route::delete('/{project_id}/delete', [ProjectControllerApi::class, 'deleteProject']);
+    });
+    Route::group(['prefix' => 'check_logs'], function () {
+        Route::post('/checkin' , [CheckLogControllerApi::class, 'checkin']);
     });
 });

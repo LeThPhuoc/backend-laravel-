@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 
-class CheckInLogs extends Model
+class CheckLogs extends Model
 {
     //
     use HasFactory;
 
-    protected $fillable = ['checkin', 'checkout'];
+    protected $fillable = ['checkin_time', 'checkout_time', 'project_id', 'staff_id'];
 
     public function staff()
     {

@@ -41,6 +41,6 @@ class Staff extends Authenticatable implements JWTSubject
 
     public function checkLogs()
     {
-        return $this->hasMany(CheckLog::class);
+        return $this->hasMany(CheckLogs::class);
     }
 }
