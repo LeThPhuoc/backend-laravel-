@@ -27,5 +27,7 @@ Route::middleware('jwt.any')->group(function () {
     });
     Route::group(['prefix' => 'check_logs'], function () {
         Route::post('/checkin' , [CheckLogControllerApi::class, 'checkin']);
+        Route::post('/checkout' , [CheckLogControllerApi::class, 'checkout']);
+        Route::get('/detail/project' , [CheckLogControllerApi::class, 'getDetail']);
     });
 });
