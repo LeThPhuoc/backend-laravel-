@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\CheckLog\CheckinAndOutRequest;
 use App\Models\Boss;
 use App\Models\Staff;
 use App\Models\Project;
@@ -16,7 +17,7 @@ class CheckLogControllerApi extends Controller
         
     }
 
-    public function checkin(Request $request) {
+    public function checkin(CheckinAndOutRequest $request) {
         $post = $request->only('project_id', 'staff_id');
         $staff = Staff::findOrFail($post['staff_id']);
         $staff->checkLogs()->create([
@@ -25,12 +26,10 @@ class CheckLogControllerApi extends Controller
         ]);
     }
 
-    public function checkout(Request $request) {
+    public function checkout(CheckinAndOutRequest $request) {
         $post = $request->only('project_id', 'staff_id');
         $staff = Staff::findOrFail($post['staff_id']);
-        $log = $staff->checkLogs()
-            ->whereDate('checkin_time', now())
-            ->first();
+        $log = $staff->checkLogs->last();
         if($log) {
             $log->checkout_time = now();
             $log->save();
@@ -46,20 +45,32 @@ class CheckLogControllerApi extends Controller
         $project = Project::with(
             ['staff.checkLogs' => function ($query) {
             $query
-                ->whereDate('checkin_time', now())
-                ->first();
+                ->whereDate('checkin_time', now());
         }]
         )->findOrFail($post['project_id']);
 
         foreach($project->staff as $staff) {
-            $log = $staff->checkLogs->first();
+            $log = $staff->checkLogs->last();
 
             $staff->checkin_time  = $log?->checkin_time;
             $staff->checkout_time = $log?->checkout_time;
+            $staff->role = $staff->pivot->role;
+            $totalMinutes = $staff->checkLogs()
+                ->whereNotNull('checkout_time')
+                ->selectRaw('SUM(TIMESTAMPDIFF(MINUTE, checkin_time, checkout_time)) as total')
+                ->value('total');
+            $totalMinutesToday = $staff->checkLogs()
+                ->whereDate('checkin_time', today())
+                ->whereNotNull('checkout_time')
+                ->selectRaw('SUM(TIMESTAMPDIFF(MINUTE, checkin_time, checkout_time)) as total')
+                ->value('total');
+
+            $staff->total_hours_today = $totalMinutesToday;
+            $staff->total_hours = round($totalMinutes / 60);
 
             $staff->unsetRelation('checkLogs');
         }
-        // dd($project);
+        
         return response()->json(
             $project
         );
