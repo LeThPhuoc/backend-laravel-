@@ -10,6 +10,7 @@ use App\Models\Staff;
 use App\Models\Project;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Response;
+use Carbon\Carbon;
 
 class CheckLogControllerApi extends Controller
 {
@@ -24,6 +25,9 @@ class CheckLogControllerApi extends Controller
             'project_id' => $post['project_id'],
             'checkin_time' => now(),
         ]);
+        return response()->json([
+            'message' => ['checkin công việc thành công']
+        ], Response::HTTP_OK);
     }
 
     public function checkout(CheckinAndOutRequest $request) {
@@ -33,6 +37,9 @@ class CheckLogControllerApi extends Controller
         if($log) {
             $log->checkout_time = now();
             $log->save();
+            return response()->json([
+                'message' => ['checkout công việc thành công']
+            ], Response::HTTP_OK);
         } else {
             return response()->json([
                 'message' => 'No check-in record found for today.'
