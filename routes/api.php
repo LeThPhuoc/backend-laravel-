@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Backend\Api\AuthControllerApi;
 use App\Http\Controllers\Backend\Api\Project\ProjectControllerApi;
 use App\Http\Controllers\Backend\Api\CheckLogControllerApi;
+use App\Http\Controllers\Backend\Api\TimeSheetControllerApi;
 
 Route::get('/users', [AuthControllerApi::class, 'index']);
 Route::post('/login', [AuthControllerApi::class, 'login']);
@@ -29,5 +30,8 @@ Route::middleware('jwt.any')->group(function () {
         Route::post('/checkin' , [CheckLogControllerApi::class, 'checkin']);
         Route::post('/checkout' , [CheckLogControllerApi::class, 'checkout']);
         Route::get('/detail/project' , [CheckLogControllerApi::class, 'getDetail']);
+    });
+    Route::group(['prefix' => 'timesheet'], function () {
+        Route::get('/staff_in_project' , [TimeSheetControllerApi::class, 'getListStaffInProject']);
     });
 });

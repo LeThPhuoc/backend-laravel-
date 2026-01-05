@@ -25,9 +25,9 @@ class Project extends Model
                     ->withTimestamps();
     }
 
-    public function checkLogs()
+    public function timeSheet()
     {
-        return $this->hasMany(CheckLogs::class);
+        return $this->hasMany(TimeSheet::class);
     }
 
     protected $hidden = [

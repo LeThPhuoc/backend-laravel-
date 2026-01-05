@@ -45,4 +45,9 @@ class Boss extends Authenticatable implements JWTSubject
                     ->withPivot('role')
                     ->withTimestamps();
     }
+
+    public function timeSheet()
+    {
+        return $this->hasMany(TimeSheet::class);
+    }
 }
