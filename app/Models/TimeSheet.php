@@ -11,6 +11,7 @@ class TimeSheet extends Model
     //
     use HasFactory;
     protected $table = 'timesheet';
+    protected $fillable = ['project_id','staff_id','timekeeping_number', 'boss_id'];
 
     public function project() {
         return $this->belongsTo(Project::class, 'project_id');

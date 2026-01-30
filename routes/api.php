@@ -32,6 +32,7 @@ Route::middleware('jwt.any')->group(function () {
         Route::get('/detail/project' , [CheckLogControllerApi::class, 'getDetail']);
     });
     Route::group(['prefix' => 'timesheet'], function () {
-        Route::get('/staff_in_project' , [TimeSheetControllerApi::class, 'getListStaffInProject']);
+        Route::get('/get_detail/{id}' , [TimeSheetControllerApi::class, 'getDetailTimeSheet']);
+        Route::post('/upsert' , [TimeSheetControllerApi::class, 'timesheetUpsert']);
     });
 });
